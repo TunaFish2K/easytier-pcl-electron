@@ -10,6 +10,10 @@
       "x64": {
         "archive": "deps/easytier-macos-x86_64-v2.4.5.zip",
         "executable": "easytier-core"
+      },
+      "arm64": {
+        "archive": "deps/easytier-macos-aarch64-v2.4.5.zip",
+        "executable": "easytier-core"
       }
     },
     "linux": {
