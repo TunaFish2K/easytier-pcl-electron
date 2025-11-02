@@ -1,5 +1,10 @@
 <template>
   <div class="home-container">
+    <!-- 设置按钮 -->
+    <button @click="goToSettings" class="settings-btn" title="设置">
+      ⚙️
+    </button>
+
     <h1>EasyTier PCL</h1>
 
     <div class="button-group">
@@ -30,6 +35,10 @@ const goToHost = () => {
 const goToJoin = () => {
   router.push('/join')
 }
+
+const goToSettings = () => {
+  router.push('/settings')
+}
 </script>
 
 <style scoped>
@@ -42,6 +51,31 @@ const goToJoin = () => {
   padding: 2rem;
   background: linear-gradient(135deg, var(--bg-gradient-home-start) 0%, var(--bg-gradient-home-end) 100%);
   color: var(--text-primary);
+  position: relative;
+}
+
+.settings-btn {
+  position: absolute;
+  top: 2rem;
+  right: 2rem;
+  width: 50px;
+  height: 50px;
+  border: none;
+  border-radius: 50%;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.settings-btn:hover {
+  transform: rotate(90deg) scale(1.1);
+  box-shadow: var(--shadow-hover);
 }
 
 h1 {

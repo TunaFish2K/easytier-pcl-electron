@@ -228,8 +228,9 @@ export class EasyTierManager extends EventEmitter {
 
   /**
    * 作为房主创建房间
+   * @param customNodes 自定义节点列表（可选）。如果提供，将使用自定义节点而不是从 API 获取
    */
-  async createRoom(port: number, roomName?: string): Promise<RoomInfo> {
+  async createRoom(port: number, roomName?: string, customNodes?: string[]): Promise<RoomInfo> {
     // 只有运行中、启动中、停止中状态不允许创建房间
     if (
       this.status === EasyTierStatus.RUNNING ||
@@ -256,10 +257,18 @@ export class EasyTierManager extends EventEmitter {
         this.addLog(LogLevel.INFO, `Room name: ${roomName}`, 'system')
       }
 
-      // 获取可用节点
-      this.addLog(LogLevel.INFO, 'Fetching available nodes...', 'system')
-      const nodes = await getAvailableNodes()
-      this.addLog(LogLevel.INFO, `Found ${nodes.length} available nodes`, 'system')
+      // 获取节点列表
+      let nodes: string[]
+      if (customNodes && customNodes.length > 0) {
+        // 使用自定义节点
+        nodes = customNodes
+        this.addLog(LogLevel.INFO, `Using ${nodes.length} custom nodes`, 'system')
+      } else {
+        // 从 API 获取可用节点
+        this.addLog(LogLevel.INFO, 'Fetching available nodes from API...', 'system')
+        nodes = await getAvailableNodes()
+        this.addLog(LogLevel.INFO, `Found ${nodes.length} available nodes from API`, 'system')
+      }
 
       // 生成主机名：Server-${5位随机字符串}
       const hostname = `Server-${generateRandomId()}`
@@ -299,8 +308,9 @@ export class EasyTierManager extends EventEmitter {
 
   /**
    * 作为客户端加入房间
+   * @param customNodes 自定义节点列表（可选）。如果提供，将使用自定义节点而不是从 API 获取
    */
-  async joinRoom(invitationCode: string, playerName: string): Promise<RoomInfo> {
+  async joinRoom(invitationCode: string, playerName: string, customNodes?: string[]): Promise<RoomInfo> {
     // 只有运行中、启动中、停止中状态不允许加入房间
     if (
       this.status === EasyTierStatus.RUNNING ||
@@ -322,10 +332,18 @@ export class EasyTierManager extends EventEmitter {
       const portForwarded = await getAvailablePort()
       this.addLog(LogLevel.INFO, `Allocated local port for forwarding: ${portForwarded}`, 'system')
 
-      // 获取可用节点
-      this.addLog(LogLevel.INFO, 'Fetching available nodes...', 'system')
-      const nodes = await getAvailableNodes()
-      this.addLog(LogLevel.INFO, `Found ${nodes.length} available nodes`, 'system')
+      // 获取节点列表
+      let nodes: string[]
+      if (customNodes && customNodes.length > 0) {
+        // 使用自定义节点
+        nodes = customNodes
+        this.addLog(LogLevel.INFO, `Using ${nodes.length} custom nodes`, 'system')
+      } else {
+        // 从 API 获取可用节点
+        this.addLog(LogLevel.INFO, 'Fetching available nodes from API...', 'system')
+        nodes = await getAvailableNodes()
+        this.addLog(LogLevel.INFO, `Found ${nodes.length} available nodes from API`, 'system')
+      }
 
       // 生成客户端主机名后缀：Client-${5位随机字符串}
       // playerName 已经是5位随机字符串（例如 "A1B2C"）

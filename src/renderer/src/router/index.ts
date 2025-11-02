@@ -3,6 +3,7 @@ import Home from '../views/Home.vue'
 import HostSetup from '../views/HostSetup.vue'
 import JoinRoom from '../views/JoinRoom.vue'
 import RoomInfo from '../views/RoomInfo.vue'
+import Settings from '../views/Settings.vue'
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -26,6 +27,11 @@ const router = createRouter({
       path: '/room',
       name: 'room',
       component: RoomInfo
+    },
+    {
+      path: '/settings',
+      name: 'settings',
+      component: Settings
     }
   ]
 })

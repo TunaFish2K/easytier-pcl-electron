@@ -45,10 +45,12 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useEasyTier } from '../composables/useEasyTier'
+import { useCustomNodes } from '../composables/useCustomNodes'
 import PermissionRequest from '../components/PermissionRequest.vue'
 
 const router = useRouter()
 const { createRoom: createEasyTierRoom, requiresRoot, setSudoPassword } = useEasyTier()
+const { enabled: customNodesEnabled, getNodes } = useCustomNodes()
 
 const formData = ref({
   roomName: '',
@@ -111,10 +113,14 @@ const createRoom = async () => {
   error.value = ''
 
   try {
+    // 获取自定义节点（如果启用）
+    const customNodes = customNodesEnabled.value ? getNodes() : undefined
+
     // 调用 EasyTier 创建房间，传递房间名称作为 attachment
     const roomInfo = await createEasyTierRoom(
       formData.value.serverPort,
-      formData.value.roomName || undefined
+      formData.value.roomName || undefined,
+      customNodes
     )
 
     // 创建成功后跳转到房间信息页面

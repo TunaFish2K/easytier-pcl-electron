@@ -45,9 +45,9 @@ export class EasyTierIpcHandler {
     })
 
     // 创建房间（房主）
-    ipcMain.handle('easytier:create-room', async (_, port: number, roomName?: string) => {
+    ipcMain.handle('easytier:create-room', async (_, port: number, roomName?: string, customNodes?: string[]) => {
       try {
-        const roomInfo = await this.manager.createRoom(port, roomName)
+        const roomInfo = await this.manager.createRoom(port, roomName, customNodes)
         return { success: true, data: roomInfo }
       } catch (error) {
         return {
@@ -60,9 +60,9 @@ export class EasyTierIpcHandler {
     // 加入房间（客户端）
     ipcMain.handle(
       'easytier:join-room',
-      async (_, invitationCode: string, playerName: string) => {
+      async (_, invitationCode: string, playerName: string, customNodes?: string[]) => {
         try {
-          const roomInfo = await this.manager.joinRoom(invitationCode, playerName)
+          const roomInfo = await this.manager.joinRoom(invitationCode, playerName, customNodes)
           return { success: true, data: roomInfo }
         } catch (error) {
           return {

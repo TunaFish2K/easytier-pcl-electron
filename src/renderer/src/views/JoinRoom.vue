@@ -44,10 +44,12 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useEasyTier } from '../composables/useEasyTier'
+import { useCustomNodes } from '../composables/useCustomNodes'
 import PermissionRequest from '../components/PermissionRequest.vue'
 
 const router = useRouter()
 const { joinRoom: joinEasyTierRoom, requiresRoot, setSudoPassword } = useEasyTier()
+const { enabled: customNodesEnabled, getNodes } = useCustomNodes()
 
 const formData = ref({
   invitationCode: ''
@@ -122,10 +124,14 @@ const joinRoom = async () => {
     // 生成随机后缀
     const randomSuffix = generateRandomSuffix()
 
+    // 获取自定义节点（如果启用）
+    const customNodes = customNodesEnabled.value ? getNodes() : undefined
+
     // 调用 EasyTier 加入房间
     await joinEasyTierRoom(
       formData.value.invitationCode,
-      randomSuffix
+      randomSuffix,
+      customNodes
     )
 
     // 加入成功后跳转到房间信息页面

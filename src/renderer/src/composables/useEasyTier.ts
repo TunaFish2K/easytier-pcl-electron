@@ -37,7 +37,7 @@ export function useEasyTier() {
   /**
    * 创建房间（作为房主）
    */
-  const createRoom = async (port: number, roomName?: string): Promise<RoomInfo> => {
+  const createRoom = async (port: number, roomName?: string, customNodes?: string[]): Promise<RoomInfo> => {
     loading.value = true
     error.value = null
 
@@ -45,7 +45,8 @@ export function useEasyTier() {
       const response: ApiResponse<RoomInfo> = await invoke(
         'easytier:create-room',
         port,
-        roomName
+        roomName,
+        customNodes
       )
 
       if (!response.success) {
@@ -83,7 +84,7 @@ export function useEasyTier() {
   /**
    * 加入房间（作为客户端）
    */
-  const joinRoom = async (invitationCode: string, playerName: string): Promise<RoomInfo> => {
+  const joinRoom = async (invitationCode: string, playerName: string, customNodes?: string[]): Promise<RoomInfo> => {
     loading.value = true
     error.value = null
 
@@ -91,7 +92,8 @@ export function useEasyTier() {
       const response: ApiResponse<RoomInfo> = await invoke(
         'easytier:join-room',
         invitationCode,
-        playerName
+        playerName,
+        customNodes
       )
 
       if (!response.success) {
