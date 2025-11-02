@@ -203,16 +203,16 @@ const getLevelColor = (level: string) => {
   justify-content: center;
   min-height: 100vh;
   padding: 2rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--bg-gradient-room-start) 0%, var(--bg-gradient-room-end) 100%);
 }
 
 .room-card {
-  background: white;
+  background: var(--bg-secondary);
   border-radius: 1rem;
   padding: 2rem;
   max-width: 700px;
   width: 100%;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-lg);
   position: relative;
 }
 
@@ -227,29 +227,29 @@ const getLevelColor = (level: string) => {
 }
 
 .status-active {
-  background: #c6f6d5;
-  color: #22543d;
+  background: var(--status-success);
+  color: #FFFFFF;
 }
 
 .status-inactive {
-  background: #fed7d7;
-  color: #742a2a;
+  background: var(--status-error);
+  color: #FFFFFF;
 }
 
 h1 {
-  color: #2d3748;
+  color: var(--text-primary);
   margin-bottom: 2rem;
   text-align: center;
 }
 
 h2 {
-  color: #4a5568;
+  color: var(--text-secondary);
   font-size: 1.2rem;
   margin-bottom: 1rem;
 }
 
 h3 {
-  color: #4a5568;
+  color: var(--text-secondary);
   font-size: 1rem;
   margin-bottom: 0.5rem;
 }
@@ -257,7 +257,7 @@ h3 {
 .info-section {
   margin-bottom: 2rem;
   padding: 1.5rem;
-  background: #f7fafc;
+  background: var(--bg-tertiary);
   border-radius: 0.5rem;
 }
 
@@ -274,24 +274,25 @@ h3 {
 }
 
 .label {
-  color: #718096;
+  color: var(--text-tertiary);
   font-weight: 500;
   min-width: 100px;
 }
 
 .value {
-  color: #2d3748;
+  color: var(--text-primary);
   font-family: monospace;
   flex: 1;
   padding: 0.5rem;
-  background: white;
+  background: var(--bg-secondary);
   border-radius: 0.25rem;
+  border: 1px solid var(--border-color);
 }
 
 .copy-btn {
   padding: 0.25rem 0.75rem;
-  background: #667eea;
-  color: white;
+  background: var(--btn-secondary);
+  color: var(--text-inverse);
   border: none;
   border-radius: 0.25rem;
   cursor: pointer;
@@ -300,7 +301,7 @@ h3 {
 }
 
 .copy-btn:hover {
-  background: #5a67d8;
+  background: var(--btn-secondary-hover);
 }
 
 .player-list {
@@ -314,8 +315,9 @@ h3 {
 .logs-container {
   max-height: 300px;
   overflow-y: auto;
-  background: white;
+  background: var(--bg-secondary);
   border-radius: 0.25rem;
+  border: 1px solid var(--border-color);
 }
 
 .logs-list {
@@ -330,7 +332,7 @@ h3 {
   padding: 0.5rem;
   font-family: monospace;
   font-size: 0.85rem;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .log-entry:last-child {
@@ -338,7 +340,7 @@ h3 {
 }
 
 .log-time {
-  color: #a0aec0;
+  color: var(--text-tertiary);
   min-width: 80px;
 }
 
@@ -348,7 +350,7 @@ h3 {
 }
 
 .log-message {
-  color: #2d3748;
+  color: var(--text-primary);
   flex: 1;
   word-break: break-word;
 }
@@ -358,12 +360,13 @@ h3 {
   justify-content: space-between;
   align-items: center;
   padding: 0.75rem;
-  background: white;
+  background: var(--bg-secondary);
   border-radius: 0.25rem;
+  border: 1px solid var(--border-color);
 }
 
 .player-name {
-  color: #2d3748;
+  color: var(--text-primary);
   font-weight: 500;
 }
 
@@ -374,25 +377,25 @@ h3 {
 }
 
 .player-status.online {
-  background: #c6f6d5;
-  color: #22543d;
+  background: var(--status-success);
+  color: #FFFFFF;
 }
 
 .player-status.offline {
-  background: #e2e8f0;
-  color: #718096;
+  background: var(--bg-tertiary);
+  color: var(--text-tertiary);
 }
 
 .empty-state {
   text-align: center;
-  color: #a0aec0;
+  color: var(--text-tertiary);
   padding: 2rem;
 }
 
 .connection-status {
   margin-bottom: 2rem;
   padding: 1rem;
-  background: #f7fafc;
+  background: var(--bg-tertiary);
   border-radius: 0.5rem;
 }
 
@@ -405,19 +408,19 @@ h3 {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: #4a5568;
+  color: var(--text-secondary);
 }
 
 .status-dot {
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: #cbd5e0;
+  background: var(--border-color);
 }
 
 .status-dot.active {
-  background: #48bb78;
-  box-shadow: 0 0 8px rgba(72, 187, 120, 0.6);
+  background: var(--status-success);
+  box-shadow: 0 0 8px var(--status-success);
 }
 
 .button-group {
@@ -444,30 +447,31 @@ h3 {
 }
 
 .btn-info {
-  background: #667eea;
-  color: white;
+  background: var(--btn-secondary);
+  color: #FFFFFF;
 }
 
 .btn-info:hover:not(:disabled) {
-  background: #5a67d8;
+  background: var(--btn-secondary-hover);
 }
 
 .btn-danger {
-  background: #f56565;
-  color: white;
+  background: var(--btn-danger);
+  color: #FFFFFF;
 }
 
 .btn-danger:hover:not(:disabled) {
-  background: #e53e3e;
+  background: var(--btn-danger-hover);
 }
 
 .btn-secondary {
-  background: #e2e8f0;
-  color: #4a5568;
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border-focus);
 }
 
 .btn-secondary:hover:not(:disabled) {
-  background: #cbd5e0;
+  background: var(--bg-tertiary);
 }
 
 .message {
@@ -478,17 +482,17 @@ h3 {
 }
 
 .message.success {
-  background: #c6f6d5;
-  color: #22543d;
+  background: var(--status-success);
+  color: #FFFFFF;
 }
 
 .message.info {
-  background: #bee3f8;
-  color: #2c5282;
+  background: var(--status-info);
+  color: #FFFFFF;
 }
 
 .message.error {
-  background: #fed7d7;
-  color: #c53030;
+  background: var(--status-error);
+  color: #FFFFFF;
 }
 </style>

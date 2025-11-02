@@ -1,5 +1,8 @@
 <script setup lang="ts">
-// Main App component with router view
+import { useTheme } from './composables/useTheme'
+
+// 初始化主题系统 - 自动检测系统偏好
+useTheme()
 </script>
 
 <template>
@@ -17,6 +20,9 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 #app {

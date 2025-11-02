@@ -108,7 +108,7 @@ const handleCancel = () => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: var(--overlay-bg);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
@@ -118,9 +118,9 @@ const handleCancel = () => {
 }
 
 .permission-modal {
-  background: white;
+  background: var(--bg-secondary);
   border-radius: 12px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-hover);
   width: 90%;
   max-width: 480px;
   overflow: hidden;
@@ -132,21 +132,21 @@ const handleCancel = () => {
   align-items: center;
   justify-content: space-between;
   padding: 20px 24px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .modal-header h2 {
   margin: 0;
   font-size: 20px;
   font-weight: 600;
-  color: #111827;
+  color: var(--text-primary);
 }
 
 .close-btn {
   background: none;
   border: none;
   font-size: 28px;
-  color: #6b7280;
+  color: var(--text-tertiary);
   cursor: pointer;
   width: 32px;
   height: 32px;
@@ -158,8 +158,8 @@ const handleCancel = () => {
 }
 
 .close-btn:hover:not(:disabled) {
-  background: #f3f4f6;
-  color: #111827;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
 }
 
 .close-btn:disabled {
@@ -175,12 +175,12 @@ const handleCancel = () => {
   display: flex;
   justify-content: center;
   margin-bottom: 20px;
-  color: #f59e0b;
+  color: var(--status-warning);
 }
 
 .permission-message {
   text-align: center;
-  color: #374151;
+  color: var(--text-secondary);
   margin-bottom: 24px;
   line-height: 1.6;
 }
@@ -194,35 +194,37 @@ const handleCancel = () => {
   margin-bottom: 8px;
   font-size: 14px;
   font-weight: 500;
-  color: #374151;
+  color: var(--text-secondary);
 }
 
 .input-group input {
   width: 100%;
   padding: 10px 14px;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--input-border);
   border-radius: 8px;
   font-size: 14px;
   transition: all 0.2s;
+  background: var(--input-bg);
+  color: var(--input-text);
 }
 
 .input-group input:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: var(--input-focus-border);
+  box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.2);
 }
 
 .input-group input:disabled {
-  background: #f3f4f6;
+  background: var(--bg-tertiary);
   cursor: not-allowed;
 }
 
 .info-text {
-  background: #f3f4f6;
+  background: var(--bg-tertiary);
   padding: 12px;
   border-radius: 8px;
   font-size: 13px;
-  color: #6b7280;
+  color: var(--text-tertiary);
 }
 
 .info-text p {
@@ -234,8 +236,8 @@ const handleCancel = () => {
   display: flex;
   gap: 12px;
   padding: 16px 24px;
-  border-top: 1px solid #e5e7eb;
-  background: #f9fafb;
+  border-top: 1px solid var(--border-color);
+  background: var(--bg-tertiary);
 }
 
 .btn {
@@ -250,22 +252,22 @@ const handleCancel = () => {
 }
 
 .btn-cancel {
-  background: white;
-  color: #374151;
-  border: 1px solid #d1d5db;
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border-focus);
 }
 
 .btn-cancel:hover:not(:disabled) {
-  background: #f3f4f6;
+  background: var(--bg-tertiary);
 }
 
 .btn-authorize {
-  background: #3b82f6;
-  color: white;
+  background: var(--btn-secondary);
+  color: #FFFFFF;
 }
 
 .btn-authorize:hover:not(:disabled) {
-  background: #2563eb;
+  background: var(--btn-secondary-hover);
 }
 
 .btn:disabled {

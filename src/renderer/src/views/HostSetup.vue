@@ -7,15 +7,8 @@
       <form @submit.prevent="handleCreateRoom" class="setup-form">
         <div class="form-group">
           <label for="serverPort">Minecraft 服务器端口</label>
-          <input
-            id="serverPort"
-            v-model.number="formData.serverPort"
-            type="number"
-            placeholder="25565"
-            min="1"
-            max="65535"
-            required
-          />
+          <input id="serverPort" v-model.number="formData.serverPort" type="number" placeholder="25565" min="1"
+            max="65535" required />
           <small class="hint">请确保与你的 Minecraft 服务器端口一致</small>
         </div>
 
@@ -24,13 +17,7 @@
             房间名称（附加信息）
             <span class="optional-tag">可选</span>
           </label>
-          <input
-            id="roomName"
-            v-model="formData.roomName"
-            type="text"
-            placeholder="例如：小明的生存服"
-            maxlength="20"
-          />
+          <input id="roomName" v-model="formData.roomName" type="text" placeholder="无" maxlength="20" />
           <small class="hint">
             <strong>💡 此信息将附加在邀请码末尾</strong>，便于玩家识别房间
           </small>
@@ -49,12 +36,8 @@
     </div>
 
     <!-- 权限请求模态框 -->
-    <PermissionRequest
-      :visible="showPermissionModal"
-      :message="permissionMessage"
-      @authorize="handleAuthorize"
-      @cancel="handlePermissionCancel"
-    />
+    <PermissionRequest :visible="showPermissionModal" :message="permissionMessage" @authorize="handleAuthorize"
+      @cancel="handlePermissionCancel" />
   </div>
 </template>
 
@@ -160,26 +143,26 @@ const goBack = () => {
   justify-content: center;
   min-height: 100vh;
   padding: 2rem;
-  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+  background: linear-gradient(135deg, var(--bg-gradient-host-start) 0%, var(--bg-gradient-host-end) 100%);
 }
 
 .setup-card {
-  background: white;
+  background: var(--bg-secondary);
   border-radius: 1rem;
   padding: 2rem;
   max-width: 500px;
   width: 100%;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-lg);
 }
 
 h1 {
-  color: #2d3748;
+  color: var(--text-primary);
   margin-bottom: 0.5rem;
   text-align: center;
 }
 
 .subtitle {
-  color: #718096;
+  color: var(--text-tertiary);
   text-align: center;
   margin-bottom: 2rem;
 }
@@ -197,7 +180,7 @@ h1 {
 }
 
 label {
-  color: #4a5568;
+  color: var(--text-secondary);
   font-weight: 500;
   font-size: 0.9rem;
   display: flex;
@@ -207,35 +190,37 @@ label {
 
 .optional-tag {
   font-size: 0.75rem;
-  color: #718096;
+  color: var(--text-tertiary);
   font-weight: 400;
-  background: #edf2f7;
+  background: var(--bg-tertiary);
   padding: 0.15rem 0.5rem;
   border-radius: 0.25rem;
 }
 
 input {
   padding: 0.75rem;
-  border: 2px solid #e2e8f0;
+  border: 2px solid var(--input-border);
   border-radius: 0.5rem;
   font-size: 1rem;
   transition: border-color 0.3s;
+  background: var(--input-bg);
+  color: var(--input-text);
 }
 
 input:focus {
   outline: none;
-  border-color: #48bb78;
+  border-color: var(--btn-primary);
 }
 
 .hint {
-  color: #718096;
+  color: var(--text-tertiary);
   font-size: 0.85rem;
   margin-top: 0.25rem;
   line-height: 1.4;
 }
 
 .hint strong {
-  color: #4a5568;
+  color: var(--text-secondary);
 }
 
 .button-group {
@@ -256,28 +241,29 @@ input:focus {
 }
 
 .btn-primary {
-  background: #48bb78;
-  color: white;
+  background: var(--btn-primary);
+  color: #FFFFFF;
 }
 
 .btn-primary:hover {
-  background: #38a169;
+  background: var(--btn-primary-hover);
 }
 
 .btn-secondary {
-  background: #e2e8f0;
-  color: #4a5568;
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border-focus);
 }
 
 .btn-secondary:hover {
-  background: #cbd5e0;
+  background: var(--bg-tertiary);
 }
 
 .loading {
   margin-top: 1rem;
   padding: 1rem;
-  background: #bee3f8;
-  color: #2c5282;
+  background: var(--status-info);
+  color: #FFFFFF;
   border-radius: 0.5rem;
   text-align: center;
 }
@@ -285,8 +271,8 @@ input:focus {
 .error {
   margin-top: 1rem;
   padding: 1rem;
-  background: #fed7d7;
-  color: #c53030;
+  background: var(--status-error);
+  color: #FFFFFF;
   border-radius: 0.5rem;
   text-align: center;
 }

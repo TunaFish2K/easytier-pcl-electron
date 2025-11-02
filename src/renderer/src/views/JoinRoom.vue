@@ -154,26 +154,26 @@ const goBack = () => {
   justify-content: center;
   min-height: 100vh;
   padding: 2rem;
-  background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+  background: linear-gradient(135deg, var(--bg-gradient-join-start) 0%, var(--bg-gradient-join-end) 100%);
 }
 
 .join-card {
-  background: white;
+  background: var(--bg-secondary);
   border-radius: 1rem;
   padding: 2rem;
   max-width: 500px;
   width: 100%;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-lg);
 }
 
 h1 {
-  color: #2d3748;
+  color: var(--text-primary);
   margin-bottom: 0.5rem;
   text-align: center;
 }
 
 .subtitle {
-  color: #718096;
+  color: var(--text-tertiary);
   text-align: center;
   margin-bottom: 2rem;
 }
@@ -191,26 +191,28 @@ h1 {
 }
 
 label {
-  color: #4a5568;
+  color: var(--text-secondary);
   font-weight: 500;
   font-size: 0.9rem;
 }
 
 input {
   padding: 0.75rem;
-  border: 2px solid #e2e8f0;
+  border: 2px solid var(--input-border);
   border-radius: 0.5rem;
   font-size: 1rem;
   transition: border-color 0.3s;
+  background: var(--input-bg);
+  color: var(--input-text);
 }
 
 input:focus {
   outline: none;
-  border-color: #4299e1;
+  border-color: var(--btn-secondary);
 }
 
 .hint {
-  color: #718096;
+  color: var(--text-tertiary);
   font-size: 0.85rem;
   margin-top: 0.25rem;
 }
@@ -233,28 +235,29 @@ input:focus {
 }
 
 .btn-primary {
-  background: #4299e1;
-  color: white;
+  background: var(--btn-secondary);
+  color: #FFFFFF;
 }
 
 .btn-primary:hover {
-  background: #3182ce;
+  background: var(--btn-secondary-hover);
 }
 
 .btn-secondary {
-  background: #e2e8f0;
-  color: #4a5568;
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border-focus);
 }
 
 .btn-secondary:hover {
-  background: #cbd5e0;
+  background: var(--bg-tertiary);
 }
 
 .loading {
   margin-top: 1rem;
   padding: 1rem;
-  background: #bee3f8;
-  color: #2c5282;
+  background: var(--status-info);
+  color: #FFFFFF;
   border-radius: 0.5rem;
   text-align: center;
 }
@@ -262,8 +265,8 @@ input:focus {
 .error {
   margin-top: 1rem;
   padding: 1rem;
-  background: #fed7d7;
-  color: #c53030;
+  background: var(--status-error);
+  color: #FFFFFF;
   border-radius: 0.5rem;
   text-align: center;
 }

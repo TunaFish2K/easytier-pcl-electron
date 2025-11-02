@@ -1,7 +1,6 @@
 <template>
   <div class="home-container">
-    <h1>Minecraft 联机助手</h1>
-    <p class="subtitle">基于 EasyTier 的 Minecraft 联机解决方案</p>
+    <h1>EasyTier PCL</h1>
 
     <div class="button-group">
       <button @click="goToHost" class="btn btn-primary">
@@ -41,20 +40,22 @@ const goToJoin = () => {
   justify-content: center;
   min-height: 100vh;
   padding: 2rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: linear-gradient(135deg, var(--bg-gradient-home-start) 0%, var(--bg-gradient-home-end) 100%);
+  color: var(--text-primary);
 }
 
 h1 {
   font-size: 3rem;
   margin-bottom: 1rem;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  color: var(--text-primary);
 }
 
 .subtitle {
   font-size: 1.2rem;
   margin-bottom: 3rem;
   opacity: 0.9;
+  color: var(--text-primary);
 }
 
 .button-group {
@@ -74,30 +75,30 @@ h1 {
   cursor: pointer;
   transition: all 0.3s ease;
   min-width: 250px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-md);
 }
 
 .btn:hover {
   transform: translateY(-5px);
-  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-hover);
 }
 
 .btn-primary {
-  background: #48bb78;
-  color: white;
+  background: var(--btn-primary);
+  color: #FFFFFF;
 }
 
 .btn-primary:hover {
-  background: #38a169;
+  background: var(--btn-primary-hover);
 }
 
 .btn-secondary {
-  background: #4299e1;
-  color: white;
+  background: var(--btn-secondary);
+  color: #FFFFFF;
 }
 
 .btn-secondary:hover {
-  background: #3182ce;
+  background: var(--btn-secondary-hover);
 }
 
 .icon {
