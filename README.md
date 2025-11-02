@@ -82,5 +82,5 @@ npm run build:mac
 > 作者使用了`winetricks -q comctl32ocx comdlg32ocx`安装依赖。
 
 ```bash
-npm run build:mac
+npm run build:win
 ```
