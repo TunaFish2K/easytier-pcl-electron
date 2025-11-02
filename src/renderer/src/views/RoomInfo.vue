@@ -5,6 +5,18 @@
 
       <h1>{{ isHost ? '房间管理' : '已加入房间' }}</h1>
 
+      <!-- 连接地址卡片 -->
+      <div v-if="roomInfo && roomInfo.portForwarded" class="connection-address-card">
+        <h2>本地连接地址</h2>
+        <div class="address-display">
+          <code class="address-text">127.0.0.1:{{ roomInfo.portForwarded }}</code>
+          <button @click="copyConnectionAddress" class="copy-icon-btn" title="复制地址">
+            📋
+          </button>
+        </div>
+        <p class="address-hint">在 Minecraft 中使用此地址进行多人游戏连接</p>
+      </div>
+
       <div class="info-section">
         <h2>房间信息</h2>
         <div v-if="isLoading" class="empty-state">正在加载房间信息...</div>
@@ -54,8 +66,14 @@
       </div>
 
       <div class="button-group">
-        <button v-if="isHost" @click="copyToClipboard(roomInfo!.invitationCode)" class="btn btn-info"
-          :disabled="isLoading || !roomInfo">复制邀请码</button>
+        <!-- 大的复制连接地址按钮 -->
+        <button
+          v-if="roomInfo && roomInfo.portForwarded"
+          @click="copyConnectionAddress"
+          class="btn btn-info btn-large"
+          :disabled="isLoading">
+          📋 复制连接地址
+        </button>
         <button @click="disconnect" class="btn btn-danger" :disabled="isLoading">{{ isHost ? '关闭房间' : '离开房间' }}</button>
       </div>
 
@@ -159,6 +177,13 @@ const copyToClipboard = (text: string) => {
       message.value = ''
     }, 3000)
   })
+}
+
+const copyConnectionAddress = () => {
+  if (roomInfo.value && roomInfo.value.portForwarded) {
+    const address = `127.0.0.1:${roomInfo.value.portForwarded}`
+    copyToClipboard(address)
+  }
 }
 
 const disconnect = async () => {
@@ -421,6 +446,71 @@ h3 {
 .status-dot.active {
   background: var(--status-success);
   box-shadow: 0 0 8px var(--status-success);
+}
+
+.connection-address-card {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, rgba(66, 153, 225, 0.1), rgba(72, 187, 120, 0.1));
+  border-radius: 0.75rem;
+  border: 2px solid var(--border-focus);
+}
+
+.connection-address-card h2 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+}
+
+.address-display {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: var(--bg-secondary);
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-color);
+  margin-bottom: 0.75rem;
+}
+
+.address-text {
+  flex: 1;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: var(--text-primary);
+  user-select: all;
+}
+
+.copy-icon-btn {
+  padding: 0.5rem 0.75rem;
+  background: var(--btn-secondary);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  font-size: 1.25rem;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.copy-icon-btn:hover {
+  background: var(--btn-secondary-hover);
+  transform: scale(1.1);
+}
+
+.address-hint {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-tertiary);
+  text-align: center;
+}
+
+.btn-large {
+  font-size: 1.1rem;
+  font-weight: 600;
 }
 
 .button-group {

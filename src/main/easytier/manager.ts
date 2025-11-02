@@ -7,6 +7,7 @@ import {
   generateEasyTierArguments
 } from 'easytier-pcl'
 import { getEasyTierExecutablePath } from './binary-path'
+import { getAvailablePort } from './port-utils'
 
 /**
  * EasyTier 进程状态
@@ -53,6 +54,7 @@ export interface RoomInfo {
   networkName: string
   networkSecret: string
   port: number
+  portForwarded?: number // 转发到本地的端口（客户端使用）
   role: EasyTierRole
   hostIp: string
   playerName?: string
@@ -241,6 +243,10 @@ export class EasyTierManager extends EventEmitter {
     this.setStatus(EasyTierStatus.STARTING)
 
     try {
+      // 获取一个可用的本地端口用于转发
+      const portForwarded = await getAvailablePort()
+      this.addLog(LogLevel.INFO, `Allocated local port: ${portForwarded}`, 'system')
+
       // 生成邀请码，房间名称作为 attachment
       const invitationCode = generateInvitationCode(port, roomName ? `-${roomName}` : undefined)
       const codeData = parseInvitationCode(invitationCode)
@@ -259,12 +265,13 @@ export class EasyTierManager extends EventEmitter {
       const hostname = `Server-${generateRandomId()}`
       this.addLog(LogLevel.INFO, `Host hostname: ${hostname}`, 'system')
 
-      // 生成命令行参数
+      // 生成命令行参数（房主也需要端口转发）
       const args = generateEasyTierArguments({
         invitationCode,
         nodes,
         role: 'host',
-        hostname
+        hostname,
+        portToForward: portForwarded // 房主也使用本地转发端口
       })
 
       // 保存房间信息
@@ -273,6 +280,7 @@ export class EasyTierManager extends EventEmitter {
         networkName: codeData.networkName,
         networkSecret: codeData.networkSecret,
         port: codeData.port,
+        portForwarded, // 保存转发端口
         role: 'host',
         hostIp: EasyTierManager.HOST_IP,
         attachment: codeData.attachment
@@ -310,6 +318,10 @@ export class EasyTierManager extends EventEmitter {
       const codeData = parseInvitationCode(invitationCode)
       this.addLog(LogLevel.INFO, `Parsed invitation code: ${invitationCode}`, 'system')
 
+      // 获取一个可用的本地端口用于转发
+      const portForwarded = await getAvailablePort()
+      this.addLog(LogLevel.INFO, `Allocated local port for forwarding: ${portForwarded}`, 'system')
+
       // 获取可用节点
       this.addLog(LogLevel.INFO, 'Fetching available nodes...', 'system')
       const nodes = await getAvailableNodes()
@@ -326,7 +338,7 @@ export class EasyTierManager extends EventEmitter {
         nodes,
         role: 'client',
         hostnameSuffix,
-        portToForward: codeData.port // 使用邀请码中的端口
+        portToForward: portForwarded // 使用自动分配的本地端口
       })
 
       // 保存房间信息
@@ -335,6 +347,7 @@ export class EasyTierManager extends EventEmitter {
         networkName: codeData.networkName,
         networkSecret: codeData.networkSecret,
         port: codeData.port,
+        portForwarded, // 保存转发端口
         role: 'client',
         hostIp: EasyTierManager.HOST_IP,
         playerName,

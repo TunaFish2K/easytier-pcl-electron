@@ -38,6 +38,7 @@ export interface RoomInfo {
   networkName: string
   networkSecret: string
   port: number
+  portForwarded?: number // 转发到本地的端口（客户端使用）
   role: 'host' | 'client'
   hostIp: string
   playerName?: string
