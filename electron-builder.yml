@@ -23,8 +23,11 @@ extraResources:
 afterPack: scripts/after-pack.js
 win:
   executableName: easytier-pcl-electron
+  target:
+    - nsis
 nsis:
-  artifactName: ${name}-${version}-setup.${ext}
+  oneClick: false
+  allowToChangeInstallationDirectory: true
   shortcutName: ${productName}
   uninstallDisplayName: ${productName}
   createDesktopShortcut: always
