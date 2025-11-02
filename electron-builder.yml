@@ -1,5 +1,5 @@
-appId: com.electron.app
-productName: easytier-pcl-electron
+appId: tunafish2k.easytier-pcl
+productName: EasyTierPCL
 directories:
   buildResources: build
 files:
@@ -24,13 +24,7 @@ afterPack: scripts/after-pack.js
 win:
   executableName: easytier-pcl-electron
   target:
-    - nsis
-nsis:
-  oneClick: false
-  allowToChangeInstallationDirectory: true
-  shortcutName: ${productName}
-  uninstallDisplayName: ${productName}
-  createDesktopShortcut: always
+    - zip
 mac:
   target:
     - target: dmg
