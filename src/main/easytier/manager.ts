@@ -1,4 +1,4 @@
-import { ChildProcess, spawn } from 'child_process'
+import { ChildProcess, spawn, execSync } from 'child_process'
 import { EventEmitter } from 'events'
 import {
   generateInvitationCode,
@@ -382,9 +382,39 @@ export class EasyTierManager extends EventEmitter {
    */
   reset(): void {
     if (this.process) {
-      this.process.kill()
+      this.process.kill('SIGKILL')
       this.process = null
     }
+
+    // 确保清理所有 easytier-core 进程
+    const needsRoot = EasyTierManager.requiresRootPermission()
+    if (needsRoot) {
+      try {
+        execSync('pkill -9 easytier-core', { stdio: 'ignore' })
+      } catch (err) {
+        // 忽略错误
+      }
+    }
+
+    // 清理临时文件
+    try {
+      const fs = require('fs')
+      const path = require('path')
+      const os = require('os')
+      const tmpDir = path.join(os.tmpdir(), 'easytier-pcl-electron-runtime')
+      const tmpExecutable = path.join(tmpDir, 'easytier-core')
+
+      if (fs.existsSync(tmpExecutable)) {
+        fs.unlinkSync(tmpExecutable)
+      }
+
+      if (fs.existsSync(tmpDir) && fs.readdirSync(tmpDir).length === 0) {
+        fs.rmdirSync(tmpDir)
+      }
+    } catch (err) {
+      // 忽略清理错误
+    }
+
     this.status = EasyTierStatus.IDLE
     this.roomInfo = null
     this.clearLogs()
@@ -398,6 +428,12 @@ export class EasyTierManager extends EventEmitter {
       // 检查是否需要 root 权限
       const needsRoot = EasyTierManager.requiresRootPermission()
 
+      this.addLog(
+        LogLevel.INFO,
+        `Platform: ${process.platform}, Needs root: ${needsRoot}`,
+        'system'
+      )
+
       if (needsRoot && !this.sudoPassword) {
         const error = new Error('Root permission required but no sudo password provided')
         this.addLog(LogLevel.ERROR, error.message, 'system')
@@ -407,38 +443,105 @@ export class EasyTierManager extends EventEmitter {
 
       let command: string
       let commandArgs: string[]
+      let executablePath = this.config.executablePath
+
+      // 检查是否在 AppImage 环境中（路径包含 .mount_ 或 /tmp/.mount）
+      const isAppImage = executablePath.includes('/.mount_') || executablePath.includes('/tmp/.mount')
+
+      if (isAppImage && needsRoot) {
+        this.addLog(
+          LogLevel.INFO,
+          'Detected AppImage environment with sudo requirement',
+          'system'
+        )
+
+        // 在 AppImage 环境中，sudo 无法访问 FUSE 挂载的文件
+        // 需要将可执行文件复制到真实文件系统
+        const fs = require('fs')
+        const path = require('path')
+        const os = require('os')
+
+        const tmpDir = path.join(os.tmpdir(), 'easytier-pcl-electron-runtime')
+        const tmpExecutable = path.join(tmpDir, 'easytier-core')
+
+        try {
+          // 创建临时目录
+          if (!fs.existsSync(tmpDir)) {
+            fs.mkdirSync(tmpDir, { recursive: true })
+            this.addLog(LogLevel.INFO, `Created temp directory: ${tmpDir}`, 'system')
+          }
+
+          // 复制可执行文件到临时目录
+          fs.copyFileSync(executablePath, tmpExecutable)
+          fs.chmodSync(tmpExecutable, 0o755)
+          this.addLog(
+            LogLevel.INFO,
+            `Copied executable to: ${tmpExecutable}`,
+            'system'
+          )
+
+          // 使用临时目录中的文件
+          executablePath = tmpExecutable
+        } catch (error) {
+          const errMsg = `Failed to copy executable to temp directory: ${error}`
+          this.addLog(LogLevel.ERROR, errMsg, 'system')
+          reject(new Error(errMsg))
+          return
+        }
+      }
 
       if (needsRoot && this.sudoPassword) {
         // 在 Unix 系统上使用 sudo
         command = 'sudo'
-        commandArgs = ['-S', this.config.executablePath, ...args]
+        commandArgs = ['-S', executablePath, ...args]
 
         this.addLog(
           LogLevel.INFO,
-          `Starting EasyTier with sudo: sudo -S ${this.config.executablePath} ${args.join(' ')}`,
+          `Starting EasyTier with sudo: sudo -S ${executablePath} ${args.join(' ')}`,
           'system'
         )
       } else {
         // 在其他系统上直接运行
-        command = this.config.executablePath
+        command = executablePath
         commandArgs = args
 
         this.addLog(
           LogLevel.INFO,
-          `Starting EasyTier: ${this.config.executablePath} ${args.join(' ')}`,
+          `Starting EasyTier: ${executablePath} ${args.join(' ')}`,
           'system'
         )
       }
 
+      // 检查可执行文件是否存在
+      const fs = require('fs')
+      if (!fs.existsSync(executablePath)) {
+        const error = new Error(`Executable not found: ${executablePath}`)
+        this.addLog(LogLevel.ERROR, error.message, 'system')
+        reject(error)
+        return
+      }
+
+      this.addLog(
+        LogLevel.INFO,
+        `Executable exists at: ${executablePath}`,
+        'system'
+      )
+
       try {
+        this.addLog(LogLevel.INFO, `Spawning process: ${command}`, 'system')
+        this.addLog(LogLevel.INFO, `Arguments: ${commandArgs.join(' ')}`, 'system')
+
         this.process = spawn(command, commandArgs, {
           stdio: ['pipe', 'pipe', 'pipe']
         })
+
+        this.addLog(LogLevel.INFO, `Process spawned with PID: ${this.process.pid}`, 'system')
 
         // 如果使用 sudo，写入密码到 stdin
         if (needsRoot && this.sudoPassword && this.process.stdin) {
           this.process.stdin.write(this.sudoPassword + '\n')
           this.process.stdin.end()
+          this.addLog(LogLevel.DEBUG, 'Sudo password sent to stdin', 'system')
         }
 
         // 监听 stdout
@@ -446,9 +549,6 @@ export class EasyTierManager extends EventEmitter {
           const message = data.toString().trim()
           if (message) {
             this.addLog(LogLevel.INFO, message, 'stdout')
-            if (this.config.verbose) {
-              console.log('[EasyTier stdout]', message)
-            }
           }
         })
 
@@ -460,9 +560,6 @@ export class EasyTierManager extends EventEmitter {
             if (!message.includes('[sudo]') && !message.includes('password')) {
               // EasyTier 有时会把普通信息也输出到 stderr，所以这里用 WARN 而不是 ERROR
               this.addLog(LogLevel.WARN, message, 'stderr')
-              if (this.config.verbose) {
-                console.warn('[EasyTier stderr]', message)
-              }
             }
           }
         })
@@ -470,6 +567,7 @@ export class EasyTierManager extends EventEmitter {
         // 监听进程错误
         this.process.on('error', (error: Error) => {
           this.addLog(LogLevel.ERROR, `Process error: ${error.message}`, 'system')
+          this.addLog(LogLevel.ERROR, `Error stack: ${error.stack}`, 'system')
           this.setStatus(EasyTierStatus.ERROR)
           this.emit('error', error)
           reject(error)
@@ -529,20 +627,81 @@ export class EasyTierManager extends EventEmitter {
         return
       }
 
+      const needsRoot = EasyTierManager.requiresRootPermission()
+
       const timeout = setTimeout(() => {
         if (this.process && !this.process.killed) {
           this.addLog(LogLevel.WARN, 'Process did not exit gracefully, killing...', 'system')
           this.process.kill('SIGKILL')
+
+          // 如果是通过 sudo 启动的，额外确保 easytier-core 进程被终止
+          if (needsRoot) {
+            try {
+              // 使用 pkill 强制终止所有 easytier-core 进程
+              execSync('pkill -9 easytier-core', { stdio: 'ignore' })
+              this.addLog(LogLevel.INFO, 'Forcefully killed easytier-core processes', 'system')
+            } catch (err) {
+              // pkill 可能会因为没有找到进程而失败，这是正常的
+              this.addLog(LogLevel.DEBUG, 'pkill command failed (process may already be dead)', 'system')
+            }
+          }
         }
       }, 5000)
 
       this.process.once('exit', () => {
         clearTimeout(timeout)
+
+        // 进程退出后，再次确保没有遗留的 easytier-core 进程
+        if (needsRoot) {
+          setTimeout(() => {
+            try {
+              execSync('pkill -9 easytier-core', { stdio: 'ignore' })
+            } catch (err) {
+              // 忽略错误
+            }
+          }, 500)
+        }
+
+        // 清理临时文件（如果在 AppImage 中创建过）
+        try {
+          const fs = require('fs')
+          const path = require('path')
+          const os = require('os')
+          const tmpDir = path.join(os.tmpdir(), 'easytier-pcl-electron-runtime')
+          const tmpExecutable = path.join(tmpDir, 'easytier-core')
+
+          if (fs.existsSync(tmpExecutable)) {
+            fs.unlinkSync(tmpExecutable)
+            this.addLog(LogLevel.DEBUG, `Cleaned up temp executable: ${tmpExecutable}`, 'system')
+          }
+
+          // 尝试删除临时目录（如果为空）
+          if (fs.existsSync(tmpDir) && fs.readdirSync(tmpDir).length === 0) {
+            fs.rmdirSync(tmpDir)
+            this.addLog(LogLevel.DEBUG, `Removed temp directory: ${tmpDir}`, 'system')
+          }
+        } catch (err) {
+          // 忽略清理错误
+          this.addLog(LogLevel.DEBUG, `Failed to clean temp files: ${err}`, 'system')
+        }
+
         resolve()
       })
 
       // 尝试优雅退出
       this.process.kill('SIGTERM')
+
+      // 如果是通过 sudo 启动的，也尝试终止 easytier-core 进程
+      if (needsRoot) {
+        setTimeout(() => {
+          try {
+            execSync('pkill easytier-core', { stdio: 'ignore' })
+            this.addLog(LogLevel.INFO, 'Sent SIGTERM to easytier-core processes', 'system')
+          } catch (err) {
+            // pkill 可能会因为没有找到进程而失败，这是正常的
+          }
+        }, 100)
+      }
     })
   }
 
@@ -577,5 +736,23 @@ export class EasyTierManager extends EventEmitter {
     }
 
     this.emit('log', entry)
+
+    // 始终输出日志到控制台（包括生产环境）
+    const timestamp = entry.timestamp.toLocaleTimeString('zh-CN')
+    const prefix = `[EasyTier ${level.toUpperCase()}] [${source}] ${timestamp}`
+
+    switch (level) {
+      case LogLevel.ERROR:
+        console.error(prefix, message)
+        break
+      case LogLevel.WARN:
+        console.warn(prefix, message)
+        break
+      case LogLevel.DEBUG:
+        console.debug(prefix, message)
+        break
+      default:
+        console.log(prefix, message)
+    }
   }
 }

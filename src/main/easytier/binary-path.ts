@@ -104,10 +104,12 @@ export function getEasyTierExecutablePath(): string {
   if (app.isPackaged) {
     // 生产环境：从 resources/binaries 获取
     searchDir = path.join(process.resourcesPath, 'binaries', platform, arch)
+    console.log('[Binary Path] Production mode, searching in:', searchDir)
   } else {
     // 开发环境：从系统临时目录获取
     const tempBase = path.join(os.tmpdir(), 'easytier-pcl-electron')
     searchDir = path.join(tempBase, platform, arch)
+    console.log('[Binary Path] Development mode, searching in:', searchDir)
   }
 
   // 查找可执行文件
@@ -124,6 +126,21 @@ export function getEasyTierExecutablePath(): string {
 
   if (!fs.existsSync(executablePath)) {
     throw new Error(`EasyTier executable not found at: ${executablePath}`)
+  }
+
+  // 检查文件权限
+  try {
+    fs.accessSync(executablePath, fs.constants.X_OK)
+    console.log('[Binary Path] Found executable with correct permissions:', executablePath)
+  } catch (err) {
+    console.warn('[Binary Path] Warning: Executable found but may not have execute permission:', executablePath)
+    // 尝试设置可执行权限
+    try {
+      fs.chmodSync(executablePath, 0o755)
+      console.log('[Binary Path] Set executable permission:', executablePath)
+    } catch (chmodErr) {
+      console.error('[Binary Path] Failed to set executable permission:', chmodErr)
+    }
   }
 
   return executablePath

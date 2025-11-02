@@ -3,6 +3,9 @@ productName: easytier-pcl-electron
 directories:
   buildResources: build
 files:
+  - out/**/*
+  - package.json
+  - easytier.json
   - '!**/.vscode/*'
   - '!src/*'
   - '!electron.vite.config.{js,ts,mjs,cjs}'
@@ -11,14 +14,13 @@ files:
   - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
   - '!deps/*'
   - '!scripts/*'
-  - easytier.json
+  - '!resources/*'
 extraResources:
   - from: resources/binaries
     to: binaries
     filter:
       - '**/*'
-asarUnpack:
-  - resources/**
+afterPack: scripts/after-pack.js
 win:
   executableName: easytier-pcl-electron
 nsis:
@@ -39,15 +41,11 @@ dmg:
 linux:
   target:
     - AppImage
-    - snap
-    - deb
   maintainer: electronjs.org
   category: Utility
 appImage:
   artifactName: ${name}-${version}.${ext}
 npmRebuild: false
-publish:
-  provider: generic
-  url: https://example.com/auto-updates
+publish: null
 electronDownload:
   mirror: https://npmmirror.com/mirrors/electron/
